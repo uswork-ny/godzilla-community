@@ -1,0 +1,20 @@
+{
+  "account": "xt_user1",
+  "max_investment_pct": 0.95,
+  "assets":
+  {
+    "base": {
+    "asset": "aave",
+    "cash_limit": 19.16
+    },
+    "quote": {
+      "asset": "usdt",
+      "cash_limit": 1100
+    },
+    "currency": {
+      "asset": "eth",
+      "cash_limit": 0.9423
+    }
+  }
+}
+

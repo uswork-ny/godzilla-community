@@ -1,0 +1,10 @@
+{
+  "apps" : [{
+    "name" : "td_xtc:xt_user2",
+    "cwd" : "./",
+    "script" : "../../core/python/dev_run.py",
+    "exec_interpreter": "python3",
+    "args" : "-l info td -s xtc -a xt_user2",
+    "watch" : "true"
+  }]
+}
