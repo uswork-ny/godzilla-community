@@ -368,17 +368,23 @@ struct api::impl {
         }
 
         boost::beast::flat_buffer buffer;
-        boost::beast::http::response<boost::beast::http::string_body> bres;
+        // Assuming ssl_stream is already set up
+        boost::beast::http::response_parser<boost::beast::http::dynamic_body> parser;
+        parser.body_limit(50 * 1024 * 1024); // Set a higher limit, e.g., 50 MB
 
-        boost::beast::http::read(ssl_stream, buffer, bres, ec);
-        if ( ec ) {
-            std::cerr << __MESSAGE("msg=" << ec.message()) << std::endl;
+        // Read the response
+        boost::beast::http::read(ssl_stream, buffer, parser, ec);
+        auto& bres = parser.get(); // Get the response
 
-            __MAKE_ERRMSG(res, ec.message());
-            return res;
+        if (ec) {
+          std::cerr << "Error: " << ec.message() << std::endl;
+          __MAKE_ERRMSG(res, ec.message());
+          return res;
         }
 
-        res.v = std::move(bres.body());
+        std::string str = boost::beast::buffers_to_string(bres.body().data());
+        res.v = std::move(str);
+
         SPDLOG_TRACE("target: {}, SYNC REPLY:\n{}", target, res.v);
 
         ssl_stream.shutdown(ec);
