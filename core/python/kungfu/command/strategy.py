@@ -10,14 +10,10 @@ import pathlib
 import json
 import time
 from importlib import util
-from pywingchun import Context
 from kungfu.command import kfc, pass_ctx_from_parent
 from kungfu.wingchun import Runner, replay_setup
 from kungfu.wingchun.strategy import Strategy
 from kungfu.yijinjing.log import create_logger
-from kungfu.data.sqlite.data_proxy import LedgerDB, AccountsDB
-import kungfu.wingchun.constants as wc_constants
-from xt4.spot import XTApi
 
 
 @kfc.command(help_priority=4)
@@ -65,49 +61,7 @@ def strategy(ctx, group, name, path, config, cancel, symbol, low_latency, replay
                 if (cancel or file.is_file()) and file.suffix == '.json':
                     config_files[str(file.absolute())] = 1
     if cancel:
-        acct_db = AccountsDB(pyyjj.location(pyyjj.mode.LIVE, pyyjj.category.SYSTEM, 'etc', 'kungfu', ctx.locator), 'accounts')
-        accounts = acct_db.get_accounts()
-        apis = []
-        for a in accounts:
-            url = "http://sapi.xt.com"
-            if "config" in a and "source_name" in a:
-                if "run_env" in a["config"] and a["source_name"] == "xtc":
-                    if a["config"]["run_env"] == 'prod':
-                        url = "http://sapi-inc.xt.com"
-                    if a["config"]["run_env"] == 'test':
-                        url = "http://sapi.xt-qa.com"
-            xtapi = XTApi(host=url, access_key=a["config"]["access_key"], secret_key=a["config"]["secret_key"])
-            apis.append(xtapi)
-        for conf in config_files:
-            strategy_id = pyyjj.hash_str_32(path+str(conf))
-            order_db = LedgerDB(ctx.location, ctx.name)
-            xtapi = None
-            if symbol != "":
-                if len(config_files) > 1:
-                    ctx.logger.error("cancel by symbol support only 1 config file")
-                    break
-                for xtapi in apis:
-                    try:
-                        ret = xtapi.cancel_open_orders(symbol)
-                        ctx.logger.info(ret)
-                        break
-                    except Exception as e:
-                        ctx.logger.error(str(e))
-            else:
-                orders = order_db.get_strategy_orders(strategy_id)
-                for o in orders:
-                    if o['ex_order_id'] != "" and o["status"] not in wc_constants.AllFinalOrderStatus:
-                        for xtapi in apis:
-                            try:
-                                ret = xtapi.cancel_order(o['ex_order_id'])
-                                ctx.logger.info(ret)
-                                break
-                            except Exception as e:
-                                if (str(e).find('订单不存在') >= 0):
-                                    continue
-                                else:
-                                    ctx.logger.error(str(e))
-            order_db.cancel_strategy_orders(strategy_id)
+        print('not implemented')
         return
 
     str_conf = {}

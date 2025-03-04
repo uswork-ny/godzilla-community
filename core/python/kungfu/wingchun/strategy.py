@@ -6,7 +6,6 @@ Modification date: March 3, 2025
 '''
 import os
 import sys
-import random
 import json
 import pandas as pd
 import time
@@ -19,8 +18,6 @@ import kungfu.msg.utils as msg_utils
 import kungfu.yijinjing.time as kft
 from kungfu.yijinjing.log import create_logger
 from kungfu.data.sqlite.data_proxy import MarketInfoDB, LedgerDB, AccountsDB
-from xt4.spot import XTApi
-from xt4.future import XT
 from .backtest.engine import BacktestEngine
 
 
@@ -203,36 +200,8 @@ class Strategy(pywingchun.Strategy):
                              'accounts')
         config = acct_db.get_td_account_config(
             source_id, source_id + '_' + account_id)
-        if config == "":
-            return None
-        else:
-            a = json.loads(config)
-            if a["run_env"] == "test":
-                if api_type == 'SPOT':
-                    host = "http://sapi.xt-qa.com"
-                else:
-                    host = "http://fapi.xt-qa.com"
-            elif a["run_env"] == "prod":
-                if api_type == 'SPOT':
-                    host = "http://sapi-inc.xt.com"
-                else:
-                    host = "http://fapi-inc-p.xt.com"
-            elif a["run_env"] == "quant":
-                if api_type == 'SPOT':
-                    host = "https://sapi.xt.com"
-                else:
-                    host = "https://fapi.xt.com"
-            elif a["run_env"] == "mock":
-                if api_type == 'SPOT':
-                    host = "https://sapi.xt.com"
-                else:
-                    host = "https://fapi-mock.xt.com"
-            else:
-                return None
-            if api_type == 'SPOT':
-                return XTApi(host=host, access_key=a["access_key"], secret_key=a["secret_key"])
-            else:
-                return XT(url=host, access_key=a["access_key"], secret_key=a["secret_key"])
+        '''not implemented'''
+        return None
 
     def __get_market_info(self, symbol, exchange_id, instrument_type):
         market_db = MarketInfoDB(
