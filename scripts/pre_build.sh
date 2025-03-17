@@ -30,3 +30,6 @@ pip install sortedcontainers dotted_dict loguru websocket_client click pandas re
 apt install npm
 npm install pm2@latest -g
 pm2 install pm2-logrotate
+
+# patch
+python patch.py
